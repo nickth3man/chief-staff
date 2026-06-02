@@ -1,0 +1,17 @@
+{
+  "feeds": [
+    "https://www.mckinsey.com/insights/rss.aspx",
+    "https://techcrunch.com/category/artificial-intelligence/feed/",
+    "https://www.technologyreview.com/topic/artificial-intelligence/feed/",
+    "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml",
+    "https://openai.com/news/rss.xml",
+    "https://blog.google/technology/ai/rss/",
+    "https://huggingface.co/blog/feed.xml",
+    "https://magazine.sebastianraschka.com/feed",
+    "https://rss.arxiv.org/rss/cs.AI",
+    "https://thegradient.pub/rss/",
+    "https://lastweekin.ai/feed",
+    "https://www.marktechpost.com/feed",
+    "https://feeds.arstechnica.com/arstechnica/index"
+  ]
+}

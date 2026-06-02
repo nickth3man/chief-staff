@@ -1,0 +1,27 @@
+Speaker Key:
+SJ: Sarah Jenkins (sarah.jenkins@acmecorp.com)
+NT: Nick Thompson (nick.thompson@acmecorp.com)
+DC: David Chen (david.chen@acmecorp.com)
+LV: Lisa Vance (lisa.vance@acmecorp.com)
+
+[00:00:01]
+SJ: Alright, thanks everyone for jumping on the call on such short notice. Let's kick off this weeks SaaS Performance and Infrastructure Review. We have some pressing problems with the cloud gateway and some big migration targets to hit. Nick, did you start the recording? Oh, yeah, the transcript is running. Great.
+NT: Yes, the recorder is on. We are good to go.
+SJ: Awesome. Let's talk about the API throttling issue first. David, what's the status of the primary gateway? We got flagged yesterday for hitting rate limits again and it basically stalled the daily newsletter curation pipeline.
+DC: Yeah, so basically we are hit by throttling because the cloud provider capped our tier. The solution is to migrate our workflows to a local-first dry-run suite and utilize self-managed endpoints for development and testing. I think Nick was looking into that. Nick, can you resolve the API throttling issue by shifting to local dry-run suites and using OpenRouter or standard local parsers? We need this by June 15, 2026.
+NT: Absolutely, David. I can configure the local suites to grab feeds via python-feedparser or rss-parser instead of third-party cloud aggregators. I am already on it. I can commit to wrapping up the local dry-run scripts and resolving the API throttling issues by June 15, 2026. Also, I'll map out all existing configuration structures.
+SJ: Perfect. That will save us a lot of API budget and eliminate cloud gateway dependencies. Next up is the database migration. Lisa, how are the schema migration scripts looking?
+LV: Hi Sarah. Yes, I'm working on the migrations for the user profile tables to support local CSV tracking files as well. The structure is mostly done, but I need to do a full local validation cycle. I will update the database schema migration scripts for the user profile table and test them locally. I'll have that completed by June 10, 2026.
+SJ: Excellent, June 10th sounds very reasonable for the schema validations. Now, David, once Lisa has the schema validations in place, we'll need that architecture diagram for the local fallback pipeline so the engineering team knows how to structure the fallback connectors.
+DC: Sure. I can draft that architecture diagram for the local fallback pipeline. I'll need some input from Nick on how the offline outbox database maps out, but I can target June 20, 2026, for the final draft.
+NT: Yeah, I'll supply you with the mock CSV headers for outbox context databases, tasks, and kanban cards today. So you'll have everything you need.
+DC: Perfect, that makes June 20th highly achievable.
+SJ: Great. Also, regarding the Q3 budget spreadsheet. I need to review and approve the updated SaaS subscription allocations. Sarah—meaning myself—will approve the Q3 budget spreadsheet by June 12, 2026. That should unblock the procurement team.
+NT: Got it down. I will add that to our action items log.
+SJ: Is there any other feedback on our local staging strategy?
+DC: Just that we should ensure we have strong offline document stagers for our meeting notes. Having the script automatically write out parsed outputs to outbox/meeting_notes/meeting_notes.md and outbox/drafts/email_draft.txt will be incredible for our testing.
+LV: Agreed. That will make local dry-runs completely autonomous.
+SJ: Fantastic. Let's make sure all these items are captured in our trackers immediately. If there's nothing else, let's wrap this up and get to work. Thanks everyone!
+LV: Thanks everyone.
+NT: Thank you, bye.
+DC: Bye.

@@ -1,0 +1,5 @@
+Task ID,Title,Details,Status,Created Date
+TSK-1001,Setup Local Feeds Configuration,Map the 21 tech news substacks into feed list config file,Completed,2026-06-01
+TSK-1002,Verify OpenRouter Authentication,Check OPENROUTER_API_KEY environment variable and API test calls,Completed,2026-06-01
+TSK-1003,Configure Weekly Curation feeds,Incorporate the 13 enterprise technology journals into industry config file,In Progress,2026-06-02
+TSK-1004,Verify Kanban Board Schema,Confirm Trell-to-Kanban transition and columns inside local CSV,Completed,2026-06-02

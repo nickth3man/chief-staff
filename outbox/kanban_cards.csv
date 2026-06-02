@@ -1,0 +1,5 @@
+Card ID,Title,Description,List Name,Created Date
+KNB-2001,Local Curation Engine Setup,Transition Workflow 2 daily curation script to run off feeds.json entirely locally,Backlog,2026-06-01
+KNB-2002,Weekly Digest Markdown compiler,Translate Workflow 3 curation to compile weekly digest into markdown stagers,In Progress,2026-06-02
+KNB-2003,Triage Terminal stdin prompt,Enable CLI triage yes/no query and conditional routing in Workflow 1,Done,2026-06-02
+KNB-2004,Open-source RSS Scraper deployment,Deploy python feedparser and check local error handlers,Done,2026-06-01
