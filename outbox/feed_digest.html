@@ -1,169 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Daily Digest — Local Curation Engine</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      line-height: 1.6;
-      color: #333;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-      background-color: #f9f9f9;
-    }
-    .header {
-      border-bottom: 2px solid #0066cc;
-      padding-bottom: 20px;
-      margin-bottom: 30px;
-    }
-    .header h1 {
-      margin: 0 0 10px 0;
-      color: #0066cc;
-    }
-    .meta {
-      font-size: 0.9em;
-      color: #666;
-    }
-    .card {
-      background: white;
-      border-radius: 8px;
-      padding: 25px;
-      margin-bottom: 25px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      border-left: 5px solid #ccc;
-    }
-    .card.high-score {
-      border-left-color: #28a745;
-    }
-    .card.med-score {
-      border-left-color: #ffc107;
-    }
-    .score-badge {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-size: 0.85em;
-      font-weight: bold;
-      color: white;
-      float: right;
-    }
-    .high-score .score-badge {
-      background-color: #28a745;
-    }
-    .med-score .score-badge {
-      background-color: #ffc107;
-      color: #333;
-    }
-    .title {
-      font-size: 1.3em;
-      margin-top: 0;
-      margin-bottom: 10px;
-    }
-    .title a {
-      color: #111;
-      text-decoration: none;
-    }
-    .title a:hover {
-      text-decoration: underline;
-      color: #0066cc;
-    }
-    .summary-section {
-      margin-top: 15px;
-    }
-    .rubric {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 15px;
-      margin-top: 20px;
-      border-top: 1px solid #eee;
-      padding-top: 15px;
-      font-size: 0.9em;
-    }
-    .rubric-item h4 {
-      margin: 0 0 5px 0;
-      color: #555;
-    }
-    .footer {
-      text-align: center;
-      margin-top: 50px;
-      font-size: 0.8em;
-      color: #888;
-      border-top: 1px solid #ddd;
-      padding-top: 20px;
-    }
-  </style>
-</head>
+<html><head><meta charset="UTF-8"><title>Daily Digest</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.6;color:#333;max-width:800px;margin:0 auto;padding:20px;background:#f9f9f9}
+.header{border-bottom:2px solid #0066cc;padding-bottom:20px;margin-bottom:30px}
+.header h1{margin:0 0 10px 0;color:#0066cc}
+.meta{font-size:0.9em;color:#666}
+.card{background:#fff;border-radius:8px;padding:25px;margin-bottom:25px;box-shadow:0 2px 4px rgba(0,0,0,.05);border-left:5px solid #ccc}
+.card.high-score{border-left-color:#28a745}.card.med-score{border-left-color:#ffc107}
+.score-badge{display:inline-block;padding:3px 8px;border-radius:4px;font-size:.85em;font-weight:bold;color:#fff;float:right}
+.high-score .score-badge{background:#28a745}.med-score .score-badge{background:#ffc107;color:#333}
+.title{font-size:1.3em;margin-top:0;margin-bottom:10px}.title a{color:#111;text-decoration:none}.title a:hover{text-decoration:underline;color:#0066cc}
+.rubric{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;margin-top:20px;border-top:1px solid #eee;padding-top:15px;font-size:.9em}
+.rubric-item h4{margin:0 0 5px 0;color:#555}
+.footer{text-align:center;margin-top:50px;font-size:.8em;color:#888;border-top:1px solid #ddd;padding-top:20px}
+</style></head>
 <body>
-
-  <div class="header">
-    <h1>Daily News Curation Digest</h1>
-    <div class="meta">
-      <strong>Generated:</strong> June 07, 2026 at 08:00 AM EST &nbsp;|&nbsp; 
-      <strong>Processed Feeds:</strong> 21 Channels &nbsp;|&nbsp; 
-      <strong>System:</strong> Local Open-Source Engine
-    </div>
+<div class="header">
+  <h1>Daily News Curation Digest</h1>
+  <div class="meta">
+    <strong>Generated:</strong> 2026-06-02 &nbsp;|&nbsp;
+    <strong>Articles:</strong> 3 (1 high, 1 medium)
   </div>
+</div>
 
-  <div class="card high-score">
-    <div class="score-badge">SCORE: 9.5 / 10</div>
-    <h2 class="title">
-      <a href="https://openai.com/news/rss.xml" target="_blank">OpenAI Releases GPT-4o with Native Voice</a>
-    </h2>
-    <div class="meta">Category: AI Models | Source: OpenAI News Feed</div>
-    
-    <div class="summary-section">
-      <p><strong>Summary:</strong> OpenAI has officially rolled out GPT-4o, featuring native real-time voice, text, and vision analysis capabilities with low-latency interaction. This allows systems to bypass heavy transcription loops and interact with voices directly.</p>
-    </div>
-
-    <div class="rubric">
-      <div class="rubric-item">
-        <h4>So What?</h4>
-        Enables low-latency offline-like audio curation flows directly using OpenRouter's multimodal audio models.
-      </div>
-      <div class="rubric-item">
-        <h4>Who Cares?</h4>
-        Enterprise consultants, technical builders, and customer-facing organizations looking to eliminate latency.
-      </div>
-      <div class="rubric-item">
-        <h4>What Now?</h4>
-        Integrate openai/gpt-4o-audio-preview for auto-synthesizing briefing files in Workflow 1 as scheduled CLI triggers.
+    <div class="card high-score">
+      <div class="score-badge">SCORE: 8.0 / 10</div>
+      <h2 class="title">
+        <a href="https://www.ai-supremacy.com/p/midwifing-the-next-species-in-a-datacenter-2026-generative-ai-report" target="_blank">Midwifing the Next Species in a Datacenter 👩🏻‍⚕️</a>
+      </h2>
+      <div class="meta">Category: Enterprise Tech | Action: READ | Shelf life: Long Term</div>
+      <p><strong>Summary:</strong> A 2025 generative AI infrastructure report examining datacenter bottlenecks, HBM chip shortages, and the escalating compute demands driving the next generation of AI hardware.</p>
+      <div class="rubric">
+        <div><h4>So What?</h4>Infrastructure constraints like HBM shortages directly shape enterprise AI adoption timelines, cloud pricing, and vendor strategy for the next 2-3 years.</div>
+        <div><h4>Who Cares?</h4>CTOs, infrastructure planners, procurement teams, AI-focused enterprises, and investors tracking the compute supply chain.</div>
+        <div><h4>What Now?</h4>Assess your organization's compute roadmap against projected hardware availability and consider diversifying cloud/infrastructure vendors.</div>
       </div>
     </div>
-  </div>
 
-  <div class="card high-score">
-    <div class="score-badge">SCORE: 8.2 / 10</div>
-    <h2 class="title">
-      <a href="https://www.mckinsey.com/insights/rss.aspx" target="_blank">The AI-Infused Operating Model of 2026</a>
-    </h2>
-    <div class="meta">Category: Enterprise Tech | Source: McKinsey Insights</div>
-    
-    <div class="summary-section">
-      <p><strong>Summary:</strong> A detailed business study showing that over 71% of surveyed enterprises have embedded generative AI directly inside core operational pipelines. However, escalating usage has led to API gate congestion and request throttling.</p>
-    </div>
-
-    <div class="rubric">
-      <div class="rubric-item">
-        <h4>So What?</h4>
-        Validates our core strategy of migrating cloud blueprints back to completely offline open-source configurations.
-      </div>
-      <div class="rubric-item">
-        <h4>Who Cares?</h4>
-        C-Suite sponsors and enterprise consultants advising on digital transformation curves.
-      </div>
-      <div class="rubric-item">
-        <h4>What Now?</h4>
-        Use this study as quantitative backing when pitching local staging configurations to prospective clients.
+    <div class="card med-score">
+      <div class="score-badge">SCORE: 7.0 / 10</div>
+      <h2 class="title">
+        <a href="https://theaibreak.substack.com/p/tutorial-how-to-turn-claude-into" target="_blank">☕🤖 Tutorial: How To Turn Claude Into Your Meta Ads Manager</a>
+      </h2>
+      <div class="meta">Category: AI Tools | Action: MAYBE | Shelf life: Medium Term</div>
+      <p><strong>Summary:</strong> A tutorial demonstrating how to use Claude to build, analyze, and run Meta ad campaigns without ever opening Meta Ads Manager directly.</p>
+      <div class="rubric">
+        <div><h4>So What?</h4>Demonstrates a concrete AI-agent workflow that can replace or augment a SaaS tool, signaling the shift toward AI-native marketing operations.</div>
+        <div><h4>Who Cares?</h4>Marketing teams, social media managers, and digital advertisers running Meta campaigns who want to streamline workflows.</div>
+        <div><h4>What Now?</h4>Experiment with the Claude-Meta Ads integration on a small campaign to evaluate time savings before scaling.</div>
       </div>
     </div>
-  </div>
-
-  <div class="footer">
-    Sent to you by your Chief of Staff Local Assistant. &copy; 2026 ACME Corp. All Rights Reserved.
-  </div>
-
-</body>
-</html>
+<div class="footer">Generated by Chief of Staff Local Assistant. &copy; 2026.</div>
+</body></html>

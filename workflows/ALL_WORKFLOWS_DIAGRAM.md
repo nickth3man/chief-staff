@@ -52,18 +52,18 @@ graph TB
             W1S6["6. Interactive Terminal Intake<br/>Channel: Local CLI Terminal<br/>Fields: Free Text, Local Files, URLs"]:::hitlStyle
             W1S7["7. Directory Lookup<br/>Service: Local File Path Resolver<br/>Parent: assets/consultant_x/<br/>Filter: path matches company name"]:::dataStyle
             W1S8["8. File Retrieval<br/>Service: Folder Scan<br/>Filter: filename matches<br/>'{Invitee}' + 'SaaS Performance Assessment'"]:::dataStyle
-            W1S9["9. LLM: Document Summary<br/>Service: OpenRouter<br/>Model: openai/gpt-4.1<br/>Output: paragraphs of text"]:::llmStyle
-            W1S10["10. LLM: Generate Briefing<br/>Service: OpenRouter<br/>Model: openai/gpt-4.1<br/>Schema: 5 sections<br/>(Items, Structure, Exception<br/>Handling, Stakeholders, Risk)"]:::llmStyle
+            W1S9["9. LLM: Document Summary<br/>Service: OpenRouter<br/>Model: openai/gpt-4o<br/>Output: paragraphs of text"]:::llmStyle
+            W1S10["10. LLM: Generate Briefing<br/>Service: OpenRouter<br/>Model: openai/gpt-4o<br/>Schema: 5 sections<br/>(Items, Structure, Exception<br/>Handling, Stakeholders, Risk)"]:::llmStyle
         end
 
         subgraph WF1B["<b>PATH B: No Supplemental (No)</b>"]
             W1S11["11. Directory Lookup<br/>Service: Local File Path Resolver<br/>Same pattern as Step 7"]:::dataStyle
             W1S12["12. File Retrieval<br/>Service: Folder Scan<br/>Same pattern as Step 8"]:::dataStyle
-            W1S13["13. LLM: Document Summary<br/>Service: OpenRouter<br/>Model: openai/gpt-4.1<br/>No supplemental context"]:::llmStyle
-            W1S14["14. LLM: Generate Briefing<br/>Service: OpenRouter<br/>Model: openai/gpt-4.1<br/>Schema: 5 sections<br/>(file-only, no augmentation)"]:::llmStyle
+            W1S13["13. LLM: Document Summary<br/>Service: OpenRouter<br/>Model: openai/gpt-4o<br/>No supplemental context"]:::llmStyle
+            W1S14["14. LLM: Generate Briefing<br/>Service: OpenRouter<br/>Model: openai/gpt-4o<br/>Schema: 5 sections<br/>(file-only, no augmentation)"]:::llmStyle
         end
 
-        W1S15["15. TTS Audio Synthesis<br/>Service: OpenRouter Audio<br/>Model: openai/gpt-audio<br/>Input: briefing text<br/>Output: local outbox/audio/briefing.mp3"]:::llmStyle
+        W1S15["15. TTS Audio Synthesis<br/>Service: OpenRouter<br/>Model: openai/gpt-4o-mini-tts<br/>Input: briefing text<br/>Output: local outbox/audio/briefing.mp3"]:::llmStyle
         W1S16["16. Execution Delayed<br/>Wait until: Event Start - 24h<br/>Local timestamp clock comparison"]:::processStyle
         W1S17["17. Write Email Briefing File<br/>Service: Local Draft Maker<br/>Path: outbox/briefings/{Event}_Notes.md<br/>Subject: 'Summary' & formatted notes"]:::deliveryStyle
         W1S18["18. Staged Audio Briefing<br/>Service: Local File System<br/>Destination: outbox/briefings/{Event}_Audio.mp3<br/>Stages audio file for local access"]:::deliveryStyle
@@ -133,7 +133,7 @@ graph TB
         W3S3["3. Script Loop<br/>For each feed URL in list<br/>Concurrent fetch/parse requests"]:::processStyle
         W3S4["4. Read RSS XML<br/>Service: Open-Source RSS Parser<br/>Cap: top 5 items per RSS feed"]:::externalStyle
         W3S5["5. Linear Array Flattener<br/>Aggregate all feeds to a collection<br/>NOTE: NO temporal filter applied"]:::processStyle
-        W3S6["6. LLM: Free-Form Markdown<br/>Service: OpenRouter<br/>Model: openai/gpt-4.1<br/>Rubric: 3 questions<br/>(So what / Who cares /<br/>What now) — no Shelf life<br/>Output: mobile-optimized markdown"]:::llmStyle
+        W3S6["6. LLM: Free-Form Markdown<br/>Service: OpenRouter<br/>Model: openai/gpt-4o<br/>Rubric: 3 questions<br/>(So what / Who cares /<br/>What now) — no Shelf life<br/>Output: mobile-optimized markdown"]:::llmStyle
         W3S7["7. Staged Markdown Report<br/>Service: Local File Writer<br/>Path: outbox/weekly_digest.md<br/>Body: LLM output verbatim"]:::deliveryStyle
 
         W3S1 --> W3S2
@@ -153,10 +153,10 @@ graph TB
 
         W4S1["1. Folder Watcher Trigger<br/>Service: Local File Watcher (fs.watch)<br/>Source: assets/transcripts/ drops<br/>Payload: file name + content +<br/>creation time"]:::triggerStyle
         W4S2["2. LLM: Schema Extraction<br/>Service: OpenRouter<br/>Model: google/gemini-2.5-flash<br/>Extract: Meeting Name +<br/>Attendees (Name + Email)"]:::llmStyle
-        W4S3["3. LLM: Format Notes<br/>Service: OpenRouter<br/>Model: openai/gpt-4.1<br/>Template: 8 sections<br/>(Date, Name, Attendees,<br/>Attachments, Summary,<br/>Actions table, Details, Ideas)"]:::llmStyle
+        W4S3["3. LLM: Format Notes<br/>Service: OpenRouter<br/>Model: openai/gpt-4o<br/>Template: 8 sections<br/>(Date, Name, Attendees,<br/>Attachments, Summary,<br/>Actions table, Details, Ideas)"]:::llmStyle
         W4S4["4. Persist Markdown File<br/>Service: Local File Writer<br/>Filename: '{Meeting} - {Creation Time}.md'<br/>Path: assets/meeting-documents/"]:::dataStyle
         W4S5["5. File Relocation<br/>Service: Local File Operations<br/>Action: Move file to final archive folder"]:::processStyle
-        W4S6["6. LLM: Draft Email<br/>Service: OpenRouter<br/>Model: anthropic/claude-3.5-sonnet<br/>Length: under 200 words<br/>Sections: Thank, Key Takeaways,<br/>Action Items, closing line"]:::llmStyle
+        W4S6["6. LLM: Draft Email<br/>Service: OpenRouter<br/>Model: anthropic/claude-3-5-sonnet-latest<br/>Length: under 200 words<br/>Sections: Thank, Key Takeaways,<br/>Action Items, closing line"]:::llmStyle
         W4S7["7. Stage Email Draft<br/>Service: Local File Writer<br/>Path: outbox/email-drafts/{Meeting}.txt<br/>Subject: '{Meeting} - Notes & Next Steps'<br/>Send policy: STAGE DRAFT FILE ONLY"]:::deliveryStyle
         W4S8["8. Append Local Tasks<br/>Service: Local CSV Appender<br/>File: outbox/tasks.csv<br/>Action: Append 'Send meeting follow-up'"]:::dataStyle
         W4S9["9. Append Visual Board CSV<br/>Service: Local CSV Appender<br/>File: outbox/kanban_cards.csv<br/>Purpose: team visibility card log"]:::dataStyle
@@ -197,15 +197,17 @@ graph TB
 
 ### LLM Model Matrix (Unified OpenRouter Integration)
 
-| Step | Source Model | Port Model (OpenRouter) | Role |
-| --- | --- | --- | --- |
-| WF1 · 9, 10, 13, 14 | `gpt-4.1` (OpenAI) | `openai/gpt-4o` | Document summary + briefing gen |
-| WF1 · 15 | `Local TTS / Audio LLM` | `openai/gpt-4o-audio-preview` or `openai/gpt-audio` | TTS synthesis |
-| WF2 · 7 | `claude-haiku-4-5` (Anthropic) | `anthropic/claude-3-5-haiku-latest` | Structured 18-field extraction |
-| WF3 · 6 | `gpt-4.1` (OpenAI) | `openai/gpt-4o` | Free-form markdown generation |
-| WF4 · 2 | `gemini-3-flash` (Google) | `google/gemini-2.5-flash` | Schema extraction |
-| WF4 · 3 | `gpt-4.1` (OpenAI) | `openai/gpt-4o` | Document reformatting |
-| WF4 · 6 | `claude-sonnet-4-6` (Anthropic) | `anthropic/claude-3.5-sonnet` | Email drafting |
+| Step | OpenRouter Model ID | Role |
+| --- | --- | --- |
+| WF1 · 9, 10 | `openai/gpt-4o` | Document summary + briefing gen |
+| WF1 · 11 | `openai/gpt-4o-mini-tts` | TTS synthesis |
+| WF2 · 7 | `anthropic/claude-3-5-haiku-latest` | Structured 18-field extraction |
+| WF3 · 6 | `openai/gpt-4o` | Free-form markdown generation |
+| WF4 · 2 | `google/gemini-2.5-flash` | Schema extraction |
+| WF4 · 3 | `openai/gpt-4o` | Document reformatting |
+| WF4 · 6 | `anthropic/claude-3-5-sonnet-latest` | Email drafting |
+
+> **Single source of truth:** `config/workflows.ts` mirrors this table. If a value changes here, update the config file in the same commit.
 
 ### Key Local Architecture Upgrades
 

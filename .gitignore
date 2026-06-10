@@ -1,0 +1,17 @@
+node_modules
+dist
+.env
+.env.local
+*.log
+outbox/runs/*.json
+outbox/audio/briefing_temp.mp3
+!outbox/audio/.gitkeep
+outbox/briefings/*.md
+outbox/briefings/*.mp3
+assets/transcripts/*.txt
+!assets/transcripts/.gitkeep
+assets/consultant_x/**/*.md
+!assets/consultant_x/**/.gitkeep
+.DS_Store
+coverage
+.vitest-cache

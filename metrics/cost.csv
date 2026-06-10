@@ -1,0 +1,10 @@
+Date,Workflow,Model,TokensIn,TokensOut,CostUsd
+2026-06-02,weekly-digest,openai/gpt-4o,6212,990,0.025430
+2026-06-02,weekly-digest,openai/gpt-4o,6212,1023,0.025760
+2026-06-02,weekly-digest,inclusionai/ring-2.6-1t,6745,7626,0.005272
+2026-06-02,weekly-digest,inclusionai/ring-2.6-1t,6745,9994,0.006752
+2026-06-02,weekly-digest,inclusionai/ring-2.6-1t,6728,10979,0.007366
+2026-06-02,weekly-digest,inclusionai/ring-2.6-1t,6728,12545,0.008345
+2026-06-02,curation,inclusionai/ring-2.6-1t,0,0,0.003000
+2026-06-02,briefing-prep,inclusionai/ring-2.6-1t,1555,2790,0.001860
+2026-06-02,meeting-followup,inclusionai/ring-2.6-1t,0,0,0.010000

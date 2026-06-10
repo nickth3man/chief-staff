@@ -1,0 +1,46 @@
+{
+  "name": "chief-staff",
+  "version": "0.1.0",
+  "description": "Local-first chief-of-staff agent system with 4 workflow sub-agents (briefing-prep, curation, weekly-digest, meeting-followup) coordinated by an orchestrator.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/server/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "wf1": "tsx src/workflows/briefing-prep/run.ts",
+    "wf2": "tsx src/workflows/curation/run.ts",
+    "wf3": "tsx src/workflows/weekly-digest/run.ts",
+    "wf4": "tsx src/workflows/meeting-followup/run.ts"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "chokidar": "^3.6.0",
+    "csv-parse": "^5.5.6",
+    "csv-stringify": "^6.5.0",
+    "dotenv": "^16.4.5",
+    "hono": "^4.5.0",
+    "luxon": "^3.4.4",
+    "openai": "^4.55.0",
+    "rss-parser": "^3.13.0",
+    "uuid": "^10.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/luxon": "^3.4.2",
+    "@types/node": "^20.14.0",
+    "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.0",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
+  }
+}

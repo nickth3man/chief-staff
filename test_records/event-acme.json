@@ -1,0 +1,11 @@
+{
+  "Event Name": "SaaS Performance and Infrastructure Review",
+  "Event Start": "2026-06-08T15:00:00Z",
+  "Event Duration": "30",
+  "Invitee Name": "Sarah Jenkins",
+  "Invitee Electronic Address": "sarah.jenkins@acmecorp.com",
+  "Organizer Name": "Dhilip Narayan Srinivasan",
+  "Organizer Electronic Address": "dhilipnarayan@example.com",
+  "Guests": ["nick.thompson@acmecorp.com", "david.chen@acmecorp.com", "lisa.vance@acmecorp.com"],
+  "Event Type": "Consultation"
+}

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chief of Staff</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Chief of Staff</h1>
+      <p class="tag">Local-first agent system &middot; OpenRouter &middot; TS</p>
+    </header>
+    <main>
+      <section class="chat" aria-label="Chat">
+        <div id="messages" class="messages" aria-live="polite"></div>
+        <div id="hitl" class="hitl hidden">
+          <p id="hitl-question"></p>
+          <input id="hitl-input" placeholder="Your answer" />
+          <button id="hitl-submit">Send</button>
+        </div>
+        <form id="composer" autocomplete="off">
+          <input
+            id="input"
+            placeholder='Try: "brief me on Acme", "what is in the news today", "process the transcript"'
+            required
+          />
+          <button type="submit">Send</button>
+        </form>
+        <div class="quick">
+          <button data-q="brief me on Acme">brief me on Acme</button>
+          <button data-q="what is in the news today">what is in the news</button>
+          <button data-q="weekly digest">weekly digest</button>
+          <button data-q="process assets/transcripts/acme-2026-06-07.txt">process last transcript</button>
+        </div>
+      </section>
+      <aside class="sidebar" aria-label="Outbox">
+        <h2>Outbox</h2>
+        <div class="tab-row">
+          <button data-tab="tasks" class="tab active">Tasks</button>
+          <button data-tab="kanban" class="tab">Kanban</button>
+          <button data-tab="briefings" class="tab">Briefings</button>
+          <button data-tab="meeting-docs" class="tab">Meetings</button>
+          <button data-tab="drafts" class="tab">Drafts</button>
+          <button data-tab="runs" class="tab">Runs</button>
+        </div>
+        <div id="tab-body" class="tab-body"></div>
+      </aside>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>

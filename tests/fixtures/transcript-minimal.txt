@@ -1,0 +1,5 @@
+Speaker Key:
+NT: Nick Thompson (nick.thompson@acmecorp.com)
+
+[00:00:01]
+NT: Quick sync. I'll deliver the mock CSV headers by June 9, 2026. Lisa will validate the schema by June 10, 2026. Anything else? No? Goodbye.

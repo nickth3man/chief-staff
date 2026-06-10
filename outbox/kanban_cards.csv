@@ -1,5 +1,10 @@
 Card ID,Title,Description,List Name,Created Date
-KNB-2001,Local Curation Engine Setup,Transition Workflow 2 daily curation script to run off feeds.json entirely locally,Backlog,2026-06-01
-KNB-2002,Weekly Digest Markdown compiler,Translate Workflow 3 curation to compile weekly digest into markdown stagers,In Progress,2026-06-02
-KNB-2003,Triage Terminal stdin prompt,Enable CLI triage yes/no query and conditional routing in Workflow 1,Done,2026-06-02
-KNB-2004,Open-source RSS Scraper deployment,Deploy python feedparser and check local error handlers,Done,2026-06-01
+KNB-2001,Local Curation Engine Setup,Transition Workflow 2 daily curation script to run off feeds.json entirely locally with rss-parser,Backlog,2026-06-07
+KNB-2002,Weekly Digest Markdown Compiler,Translate Workflow 3 curation to compile weekly digest into markdown stagers in outbox/weekly_digest.md,In Progress,2026-06-07
+KNB-2003,Triage Terminal Stdin Prompt,Enable CLI triage yes/no query and conditional routing in Workflow 1,Done,2026-06-07
+KNB-2004,Open-Source RSS Scraper Deployment,Deploy rss-parser via chokidar watcher and check local error handlers per asset drop,Done,2026-06-07
+KNB-1780441619450,Meeting: SaaS Performance and Infrastructure Review,"- **API Throttling:** The team's cloud gateway was flagged for hitting provider-imposed rate limits, stalling the daily newsletter curation pipeline. The group agreed to migrate workflows to a **local-first dry-run suite** using self-managed endpoints (e.g., OpenRouter or standard local parsers) to eliminate cloud gateway dependencies and reduce API budget.
+- **Database Migration:** Schema migration scripts for user profile tables are being updated to support **local CSV tracking files**, with a full local validation cycle required before rollout.
+- **Local Fallback Pipeline:** An architecture diagram is needed so the engineering team can properly structure fallback connectors once the local fallback pipeline is in place.
+- **Q3 Budget:** Sarah will review and approve the updated SaaS subscription allocations to unblock the procurement team.
+- **Offline Document Staging:** The team agreed that local dry-runs should be made fully autonomous by having scripts automatically write parsed outputs to designated local paths.",Done,2026-06-02

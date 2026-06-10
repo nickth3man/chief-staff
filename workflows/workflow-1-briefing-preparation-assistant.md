@@ -4,44 +4,40 @@
 
 **Purpose:** Prepare and deliver a comprehensive executive briefing before a scheduled meeting. The pipeline confirms the meeting, retrieves historical organizational context, optionally collects additional operator input, generates a written briefing, synthesizes an audio version, and delivers both before the meeting start time.
 
-**Source:** Local execution script `Briefing Preparation Assistant` (execution id `cmd4p2exw09ca0om5hqgtbriu`)
+**Source:** Local execution script `Briefing Preparation Assistant`
 
-**Step count:** 19 logical execution pipeline nodes. Step-numbering map:
+**Step count:** 15 logical execution pipeline nodes (Path A and Path B from the previous version have been collapsed into one parameterized path; the HITL gate in Step 4 short-circuits Step 5 if the operator says "No").
 
-| Markdown # | Node # | Role |
-| --- | --- | --- |
-| 1 | 1 | Trigger |
-| 2 | 2 | Confirmation email |
-| 3 | 3 | Org context lookup |
-| 4 | 4 | HITL triage (Terminal CLI Prompt) |
-| 5 | 5 (unnumbered) | If conditional routing |
-| 6 | 6 | Path A: supplemental intake form |
-| 7 | 7 | Path A: directory lookup |
-| 8 | 8 | Path A: file lookup |
-| 9 | 9 | Path A: summarize with LLM |
-| 10 | 10 | Path A: generate briefing with LLM |
-| 11 | 11 | Path B: directory lookup (no supplemental context path) |
-| 12 | 12 | Path B: file lookup |
-| 13 | 13 | Path B: summarize with LLM |
-| 14 | 14 | Path B: generate briefing with LLM |
-| 15 | 15 | TTS synthesis (post-merge) |
-| 16 | 16 | Wait for delivery window |
-| 17 | 17 | Email written briefing |
-| 18 | 18 | Stage local audio briefing |
-| 19 | 19 | End run |
+**Step-numbering map:**
 
-Both paths converge at Step 15 (TTS). Path A is the "additional input provided" path and includes the supplemental context form (Step 6); Path B is the "no additional input" path and skips the form intake, but still runs the full lookup + LLM briefing generation.
+| Markdown # | Role |
+| --- | --- |
+| 1 | Trigger |
+| 2 | Confirmation email |
+| 3 | Org context lookup |
+| 4 | HITL triage (Terminal/UI prompt) |
+| 5 | Optional supplemental intake (only if Step 4 = Yes) |
+| 6 | Directory lookup |
+| 7 | File lookup |
+| 8 | Read markdown file |
+| 9 | LLM: summarize |
+| 10 | LLM: generate 5-section briefing (with optional supplemental context) |
+| 11 | TTS synthesis |
+| 12 | Wait for delivery window (24h before start, or `--bypass-delay`) |
+| 13 | Stage written briefing |
+| 14 | Stage audio briefing |
+| 15 | End run |
 
-**Step groupings:** Trigger (1) / Main Flow (3) / Branching Logic (1) / Path A: Supplemental Context Processing (5) / Path B: No-Supplemental Briefing Path (4) / Delivery Phase (5)
+**Path summary:** The pipeline runs Steps 1-3 unconditionally. Step 4 asks the operator whether supplemental context is needed. If "Yes", Step 5 collects free text, file paths, and reference URLs. Steps 6-10 run regardless; Step 10 conditionally folds in the supplemental context. Steps 11-15 deliver and clean up.
 
 **Source data origin (per local open-source implementation):**
 
 - Trigger event metadata originates from a **Local JSON File** trigger load payload.
 - Org context rows come from a local CSV file: `outbox/context.csv`.
-- Folder/file lookups target local folder structure: `assets/consultant_x/`.
-- HITL triage prompt is handled interactively via the running **CLI Terminal prompt**.
+- Folder/file lookups target local folder structure: `assets/consultant_x/{Company Name}/`.
+- HITL triage prompt is handled interactively via the running **CLI Terminal prompt** or the Web UI.
 - All LLM calls are routed through **OpenRouter** (unified API gateway surface mapping to `openai/gpt-4o`).
-- TTS audio synthesis uses **OpenRouter's audio models** (such as `openai/gpt-4o-audio-preview` or `openai/gpt-audio`) to generate offline audit briefings saved directly to local outbox files. No proprietary cloud systems or third-party web services are required.
+- TTS audio synthesis uses **OpenRouter's** `openai/gpt-4o-mini-tts` model.
 
 ---
 
@@ -50,23 +46,22 @@ Both paths converge at Step 15 (TTS). Path A is the "additional input provided" 
 | Component Type | Role in This Pipeline |
 | --- | --- |
 | Inbound Webhook Event Provider | Receives structured event metadata at the trigger |
-| SMTP Email Delivery System | Outbound notifications (Steps 2, 13); inbound HITL intake (Step 6) |
+| SMTP Email Delivery System | Outbound confirmation (Step 2) |
 | Tabular Data Store (Read API) | Historical organization context lookup (Step 3) |
-| Hierarchical Object/File Storage System | Directory resolution (Step 7) and file asset retrieval (Step 8) |
-| Asynchronous HITL Gateway | Boolean triage input (Step 4); multi-field intake (Step 6) |
-| Chat Notification System | HITL prompt delivery (Step 4); audio delivery (Step 18) |
-| LLM Gateway (OpenRouter-routed) | Document summarization (Steps 9, 13); professional briefing generation (Steps 10, 14) |
-| Text-to-Speech (TTS) Audio Synthesis Engine | Audio synthesis of the written briefing (Step 15) |
-| Time-based Orchestrator Event Loop | Conditional wait for delivery window (Step 16) |
-| Address Book / Recipient Resolver | Resolves notification recipients from event metadata (Steps 2, 17, 18) |
-| Document Format Renderer | Rich-text briefing document (Steps 9, 10, 13, 14); markdown email body (Step 17) |
-| Clock Provider | Supplies current time and event-relative time calculations (Step 16) |
-| Failure Strategy Registry | Pause-and-notify behavior when storage lookups fail (Steps 7, 8, 11, 12) |
-| Multi-Modal Output Generator | Produces paired text (Steps 10, 14) and audio (Step 15) artifacts of the same content |
-| Multi-Channel Delivery Router | Routes the briefing artifact to email and chat channels (Steps 17, 18) |
+| Hierarchical Object/File Storage System | Directory resolution (Step 6) and file asset retrieval (Step 7) |
+| Asynchronous HITL Gateway | Boolean triage input (Step 4); multi-field intake (Step 5) |
+| Chat Notification System | HITL prompt delivery (Step 4); audio delivery (Step 14) |
+| LLM Gateway (OpenRouter-routed) | Document summarization (Step 9); professional briefing generation (Step 10) |
+| Text-to-Speech (TTS) Audio Synthesis Engine | Audio synthesis of the written briefing (Step 11) |
+| Time-based Orchestrator Event Loop | Conditional wait for delivery window (Step 12) |
+| Address Book / Recipient Resolver | Resolves notification recipients from event metadata (Steps 2, 13, 14) |
+| Document Format Renderer | Rich-text briefing document (Steps 9, 10); markdown email body (Step 13) |
+| Clock Provider | Supplies current time and event-relative time calculations (Step 12) |
+| Failure Strategy Registry | Pause-and-notify behavior when storage lookups fail (Steps 6, 7) |
+| Multi-Modal Output Generator | Produces paired text (Step 10) and audio (Step 11) artifacts of the same content |
+| Multi-Channel Delivery Router | Routes the briefing artifact to email and chat channels (Steps 13, 14) |
 | Service Connector / Identity-bound Adapter | Identity-bound bindings to all external interfaces |
-| Conditional Edge | Routes between Path A and Path B (Step 5) |
-| Graph Termination Node | Clears state and ends the run (Step 19) |
+| Graph Termination Node | Clears state and ends the run (Step 15) |
 
 ---
 
@@ -96,16 +91,17 @@ Both paths converge at Step 15 (TTS). Path A is the "additional input provided" 
 ### Step 2: Confirmation Receipt Mock Outbox
 
 - **Step type:** Local File Builder (Email Mock)
-- **Concrete path:** `outbox/confirmations/{event.Event Name}.txt`
+- **Concrete path:** `outbox/confirmations/{event-slug}.txt`
 - **Recipient source:** `event.Invitee Electronic Address` (To); `event.Guests` (CC)
-- **Sender identity:** Workflow operator (configured locally)
+- **Sender identity:** Resolved from `config/sender.ts` (was: hardcoded)
 - **Subject template:** `{event.Event Name} - Confirmation`
-- **Body template (exact copy drafted to file):**
+- **Slug rule:** `{event.Event Name}` lowercased, spaces → `-`, non-alphanumerics stripped.
+- **Body template:**
 
 ```email
 Hi {event.Invitee Name},
 
-Your free SaaS Performance Assessment debrief, and consultation call is successfully scheduled.  We are looking forward to helping you with the right insights for your success.
+Your free SaaS Performance Assessment debrief, and consultation call is successfully scheduled. We are looking forward to helping you with the right insights for your success.
 
 Event Name: {event.Event Name}
 Event Start: {event.Event Start}
@@ -122,73 +118,65 @@ Regards,
 - **Step type:** CSV Database Reader / Parser
 - **Concrete path:** `outbox/context.csv`
 - **Query:** Read local CSV rows and filter for invitee match against `event.Invitee Electronic Address`
-- **Returned fields:**
-  - `Target Company Name` (used downstream for directory resolution)
+- **Returned fields:** `Target Company Name`, `Industry`, `Size`, `Last Briefing Date`, `Context Notes`
 - **Output:** `orgContext` dict row fields
 
-### Step 4: CLI Terminal Triage Prompt
+### Step 4: CLI Terminal / UI Triage Prompt
 
-- **Step type:** Terminal HITL Prompt
-- **Sub-type:** Interactive stdin text query
-- **Channel:** Running bash/cmd console window
-- **Audience:** Local system operator running the terminal script
+- **Step type:** HITL Prompt
+- **Sub-types:** Interactive stdin text query (CLI mode) OR Web UI prompt (browser mode)
+- **Channel:** Running bash/cmd console window OR Web UI chat panel
+- **Audience:** Local system operator running the workflow
 - **Prompt:** "Any new input or additional details to be considered? (Yes / No): "
 - **Input schema:** String enum (Yes / No). Field name: **`Additional Input?`**.
 - **Output:** `triageResponse` object with selection field `Additional Input?`
 
----
+### Step 5: Optional Supplemental Intake
 
-## Branching Logic
-
-### Step 5: Conditional Edge
-
-- **Step type:** Conditional Edge / Router
-- **Routing rule:** `triageResponse.Additional Input?` is exactly `Yes`
-- **Path A:** Proceed to Step 6
-- **Path B (default):** No additional (new) input
-- **Path B destination:** Path B runs its own four-step sub-pipeline (Steps 11–14) — directory lookup → file lookup → summarize → generate briefing — **without** the supplemental context intake. Both Path A (Step 10) and Path B (Step 14) produce the `briefing` output and converge to the shared post-merge phase starting at Step 15 (TTS).
-
----
-
-## Path A: Supplemental Context Processing
-
-### Step 6: Interactive Terminal Intake Prompt
-
-- **Step type:** Terminal HITL Prompt
-- **Channel:** Shell interactive stdin reader (paused wait state)
+- **Step type:** HITL Prompt (multi-field)
+- **Channel:** Same as Step 4 (CLI or Web UI)
+- **Execution condition:** Only runs if `triageResponse.Additional Input? === "Yes"`. If "No", the workflow proceeds directly to Step 6 with an empty `supplementalContext`.
 - **Inputs collected:**
-  1. **Free Text (Additional Information)**: Terminal text block input
-  2. **Additional Files (Contextual Path)**: Path to a local asset file in the workspace
-  3. **Any reference URLs**: Terminal text block input
-- **Output:** `supplementalContext` (multi-field object)
+  1. **Free Text (Additional Information)**: Multi-line text block.
+  2. **Additional Files (Contextual)**: One or more local file paths in the workspace.
+  3. **Any reference URLs**: One or more URLs (text block).
+- **Output:** `supplementalContext` (multi-field object; may be empty if Step 4 = "No")
 
-### Step 7: Local Directory Resolution
+### Step 6: Local Directory Resolution
 
 - **Step type:** Directory Path Resolver
-- **Concrete search root:** [assets/consultant_x/](assets/consultant_x/)
+- **Concrete search root:** `assets/consultant_x/`
 - **Filter (ALL):**
-  - Parent directory is [assets/consultant_x/](assets/consultant_x/)
+  - Parent directory is `assets/consultant_x/`
   - Directory name CONTAINS `orgContext.Target Company Name`
 - **Failure strategy:** Pause run and notify in shell
 - **Selection policy:** First match (when more than one)
 - **Output:** `targetDirectory` (resolved local absolute folder path)
 
-### Step 8: Local File Asset Retrieval
+### Step 7: Local File Asset Retrieval
 
 - **Step type:** Local File Locator
-- **Concrete search path:** Within `targetDirectory` folder resolved in Step 7
+- **Concrete search path:** Within `targetDirectory` folder resolved in Step 6
 - **Filter (ALL):**
   - Parent directory is `targetDirectory`
   - File title CONTAINS `event.Invitee Name`
-  - File title CONTAINS `SaaS Company Performance Assessment` (or with `.md` extension)
+  - File title CONTAINS `SaaS Performance Assessment` (with `.md` extension)
 - **Failure strategy:** Pause run and notify (when no files match)
 - **Selection policy:** First match
 - **Output:** `targetFileContent` (raw read plaintext content of the Markdown file)
 
+### Step 8: Read File Content
+
+- **Step type:** Local file read
+- **Input:** file path from Step 7
+- **Output:** `targetFileContent` (text)
+
+> Steps 7 and 8 are split in the diagram for clarity but execute as a single read in the runtime.
+
 ### Step 9: Document Summarization Node
 
 - **Step type:** OpenRouter LLM Client
-- **Model ID:** `openai/gpt-4o` (customizable)
+- **Model ID:** `openai/gpt-4o`
 - **Input:** `targetFileContent`
 - **Output length:** A few paragraphs
 - **Output format:** Plain text
@@ -197,14 +185,14 @@ Regards,
 ### Step 10: Professional Briefing Generation
 
 - **Step type:** OpenRouter LLM Client
-- **Model ID:** `openai/gpt-4o` (customizable)
+- **Model ID:** `openai/gpt-4o`
 - **Format renderer:** Rich text / structured document
 - **Inputs:**
   - `summary` (from Step 9)
-  - `supplementalContext.Free Text`
-  - `supplementalContext.File uploads`
-  - `supplementalContext.Reference URLs`
   - `targetFileContent` (raw source)
+  - `supplementalContext.Free Text` *(optional)*
+  - `supplementalContext.File uploads` *(optional)*
+  - `supplementalContext.Reference URLs` *(optional)*
 - **Document schema (5 sections):**
   1. **Key Briefing Items** — 3-5 critical points, prioritized, sequenced, with supporting data
   2. **Briefing Structure & Approach** — opening strategy, framing, visual aids, pacing
@@ -215,101 +203,44 @@ Regards,
 
 ---
 
-## Path B: No-Supplemental Briefing Path
-
-Path B runs when the operator answers "No" to the Step 4 triage (i.e. no additional input is needed). It mirrors Path A's lookup + briefing flow but **skips the supplemental context intake form** (Step 6 in Path A) — the briefing is generated from the file alone, with no free-text / file-upload / URL augmentation.
-
-### Step 11: Local Directory Resolution (Path B)
-
-- **Step type:** Directory Path Resolver (identical to Step 7)
-- **Concrete search root:** [assets/consultant_x/](assets/consultant_x/)
-- **Filter (ALL):**
-  - Parent directory is [assets/consultant_x/](assets/consultant_x/)
-  - Directory name CONTAINS `orgContext.Target Company Name`
-- **Failure strategy:** Pause run and notify in shell
-- **Selection policy:** First match
-- **Output:** `targetDirectory` (resolved local folder path)
-
-### Step 12: Local File Asset Retrieval (Path B)
-
-- **Step type:** Local File Locator (identical to Step 8)
-- **Concrete search path:** Within `targetDirectory` folder resolved in Step 11
-- **Filter (ALL):**
-  - Parent directory is `targetDirectory`
-  - File title CONTAINS `event.Invitee Name`
-  - File title CONTAINS `SaaS Company Performance Assessment`
-- **Failure strategy:** Pause run and notify (when no files match)
-- **Selection policy:** First match
-- **Output:** `targetFileContent` (raw read plaintext content of the Markdown file)
-
-### Step 13: Document Summarization Node (Path B)
-
-- **Step type:** OpenRouter LLM Client (identical to Step 9)
-- **Model ID:** `openai/gpt-4o`
-- **Input:** `targetFileContent` (no supplemental context in Path B)
-- **Output length:** A few paragraphs
-- **Output format:** Plain text
-- **Output:** `summary` (text)
-
-### Step 14: Professional Briefing Generation (Path B)
-
-- **Step type:** OpenRouter LLM Client (identical to Step 10)
-- **Model ID:** `openai/gpt-4o`
-- **Format renderer:** Rich text / structured document
-- **Inputs:**
-  - `summary` (from Step 13)
-  - `targetFileContent` (raw source)
-  - *(No supplementalContext inputs in Path B — that data is only populated in Path A.)*
-- **Document schema (5 sections):** same as Step 10 (Path A version):
-  1. **Key Briefing Items** — 3-5 critical points, prioritized, sequenced, with supporting data
-  2. **Briefing Structure & Approach** — opening strategy, framing, visual aids, pacing
-  3. **Exception Handling Strategy** — 5-7 anticipated challenging questions with prepared responses, redirect techniques, "bridge" phrases
-  4. **Stakeholder-Specific Considerations** — tailored messaging, ally/skeptic identification, conflict resolution, follow-up actions
-  5. **Risk Mitigation** — sensitive topics, misinterpretation prevention, contingency plans, what NOT to say
-- **Output:** `briefing` (rich text document formatted as Markdown)
-
-> **Note on relay.app numbering vs. markdown numbering:** In the relay.app canvas, these Path B steps are numbered 11, 12, 13, 14. The markdown above follows the **logical** step ordering (where the 5-section briefing pattern reuses the same numbering as Path A for clarity), so the markdown's "Step 11" through "Step 14" refer to Path B's lookup + briefing. After Path B completes, the merge to the post-branch phase is at markdown Step 15 / relay.app Step 15 (TTS), and so on.
-
----
-
 ## Delivery Phase
 
-### Step 15: Audio Synthesis
+### Step 11: Audio Synthesis
 
 - **Step type:** OpenRouter TTS Client
-- **Model ID:** `openai/gpt-4o-audio-preview` or other audio generation options (OpenAI audio modalities)
+- **Model ID:** `openai/gpt-4o-mini-tts`
 - **Input:** `briefing` (markdown formatted plaintext)
 - **Voice profile:** Configured voice selection (e.g., alloy, echo, fable, onyx, nova, shimmer)
-- **Save destination:** [outbox/briefings/briefing_temp.mp3](outbox/briefings/briefing_temp.mp3)
+- **Save destination:** `outbox/audio/briefing_temp.mp3`
 - **Output:** `audioBriefingPath` (reference to local file path)
 
-### Step 16: State-Clock Time Delay Check
+### Step 12: State-Clock Time Delay Check
 
 - **Step type:** State Clock Tracker (Conditional Wait)
 - **Behavior:** Local script scans current system time and compares against `event.Event Start`. Delays script execution loop until current system duration offset matches `event.Event Start - 24 hours`.
 - **Bypass flag:** Script accepts `--bypass-delay` command line parameter to execute immediately during developer testing.
 - **Output:** Execution resumes safely when conditions are met.
 
-### Step 17: Written Briefing Delivery
+### Step 13: Written Briefing Delivery
 
 - **Step type:** Local Delivery Stager
 - **Mechanism:** Writes rich text Markdown file to target staging directories
-- **Concrete path:** [outbox/briefings/{event.Event Name}_Notes.md](outbox/briefings/{event.Event Name}_Notes.md)
+- **Concrete path:** `outbox/briefings/{event-slug}_notes.md`
 - **Title convention:** `{event.Event Name} - {event.Event Start}`
 - **Format:** Fully formatted briefing document
 
-### Step 18: Audio Briefing Delivery
+### Step 14: Audio Briefing Delivery
 
 - **Step type:** Local Delivery Stager
 - **Mechanism:** Copies raw audio to target outbox directory
-- **Concrete path:** [outbox/briefings/{event.Event Name}_Audio.mp3](outbox/briefings/{event.Event Name}_Audio.mp3)
+- **Concrete path:** `outbox/briefings/{event-slug}_audio.mp3`
 - **Format:** Local offline audio MP3 file
 
-### Step 19: End Run
+### Step 15: End Run
 
 - **Step type:** Ephemeral Purger
 - **Trigger:** End of script execution
-- **Action:** Purges temporary temporary files and exits gracefully
+- **Action:** Purges temporary files (e.g., `outbox/audio/briefing_temp.mp3`) and exits gracefully
 
 ---
 
@@ -327,31 +258,30 @@ Local CLI Invocation (Passing event.json Path)
     |
     +---> [4] Spawn live shell input requesting optional triage input (Yes / No)
               |
-              +---> [5] Direct route chosen:
-                        |
-                        +---> YES (Path A):
-                        |       [6] Terminal asks for extra text / URLs / reference file path
-                        |       [7] Resolve folders inside assets/consultant_x/
-                        |       [8] Find invitee file SaaS Company Performance Assessment.md
-                        |       [9] Ask OpenRouter to summarize raw text
-                        |       [10] Ask OpenRouter to draft 5-section briefing
-                        |
-                        +---> NO (Path B):
-                                [11] Resolve folders inside assets/consultant_x/
-                                [12] Find invitee file SaaS Company Performance Assessment.md
-                                [13] Ask OpenRouter to summarize raw text
-                                [14] Ask OpenRouter to draft 5-section briefing
+              +---> [5] (if Yes) Terminal asks for extra text / URLs / reference file path
+              |              output: supplementalContext
+              |              (if No) supplementalContext = {} (skip)
+              |
+              v
+    [6] Resolve folders inside assets/consultant_x/
     |
-    v
-[15] Synthesize briefing text with OpenRouter TTS and save MP3 locally
+    [7] Find invitee file matching "SaaS Performance Assessment"
     |
-    [16] Loop compared clocks until 24 hours before meeting kickoff
+    [8] Read the markdown file
     |
-    [17] File spool written markdown notes to outbox/briefings/{Event}_Notes.md
+    [9] Ask OpenRouter to summarize raw text
     |
-    [18] File spool audio briefing file to outbox/briefings/{Event}_Audio.mp3
+    [10] Ask OpenRouter to draft 5-section briefing (with optional supplemental context)
     |
-    [19] Exit workflow script
+    [11] Synthesize briefing text with OpenRouter TTS and save MP3 locally
+    |
+    [12] Loop compared clocks until 24 hours before meeting kickoff (or --bypass-delay)
+    |
+    [13] File spool written markdown notes to outbox/briefings/{slug}_notes.md
+    |
+    [14] File spool audio briefing file to outbox/briefings/{slug}_audio.mp3
+    |
+    [15] Exit workflow script
 ```
 
 ---
@@ -359,22 +289,20 @@ Local CLI Invocation (Passing event.json Path)
 ## Pipeline Configuration Notes
 
 - **Delivery window:** Briefing artifacts are spooled locally in outbox 24 hours before the scheduled event start time, unless bypassed.
-- **File identification pattern:** Files are located locally under the target client subdirectories inside [assets/consultant_x/](assets/consultant_x/), matching the invitee's name and containing the concrete keyword `SaaS Company Performance Assessment` as simple Markdown files.
-- **Directory identification pattern:** Folders are located inside [assets/consultant_x/](assets/consultant_x/) matching the target company name queried from [outbox/context.csv](outbox/context.csv).
+- **File identification pattern:** Files are located locally under the target client subdirectories inside `assets/consultant_x/{CompanyName}/`, matching the invitee's name and containing the concrete keyword `SaaS Performance Assessment` as Markdown files.
+- **Directory identification pattern:** Folders are located inside `assets/consultant_x/` matching the target company name queried from `outbox/context.csv`.
 - **Briefing content structure:** All generated briefings follow the 5-section schema (Keys, Structure, Exceptions, Stakeholders, Mitigation) and include 3-5 key points and 5-7 anticipated questions with preparation "bridges".
-- **Path difference:** Path A accepts operator additional text blocks, files, and links inside the running active terminal context. Path B skips all operator triage prompts.
+- **Supplemental context:** Path "Yes" accepts operator additional text blocks, files, and links. Path "No" skips the intake and proceeds with an empty `supplementalContext`.
 - **LLM routing:** All LLM calls are routed through **OpenRouter** using model id `openai/gpt-4o`.
-- **TTS routing:** Speech synthesis is routed through **OpenRouter's audio models** and output to a local [outbox/briefings/briefing_temp.mp3](outbox/briefings/briefing_temp.mp3) file.
+- **TTS routing:** Speech synthesis is routed through **OpenRouter** using model id `openai/gpt-4o-mini-tts`, output to a local `outbox/audio/briefing_temp.mp3` file.
 
 ---
 
 ## Local Service Setup Configurations
 
-These configurations outline how to run and manage local, offline-capable bindings.
-
 ### 1. Ingestion Config payload (Step 1)
 
-**General logic:** Receive a structured event payload from an open-source scheduler or event reader whenever a meeting is booked. The payload must include at minimum: event name, start time, duration, invitee name + email, organizer name + email, list of guests, event type.
+**General logic:** Receive a structured event payload from a local scheduler or event reader whenever a meeting is booked. The payload must include at minimum: event name, start time, duration, invitee name + email, organizer name + email, list of guests, event type.
 
 **Concrete source:** Local Event JSON Config file (e.g., `test_records/event.json`) parsed natively.
 
@@ -382,7 +310,7 @@ These configurations outline how to run and manage local, offline-capable bindin
 
 ```json
 {
-  "Event Name": "SaaS Performance Assessment — Debrief",
+  "Event Name": "SaaS Performance Assessment Debrief",
   "Event Start": "2026-06-15T15:00:00Z",
   "Event Duration": "30",
   "Invitee Name": "Jane Doe",
@@ -396,9 +324,9 @@ These configurations outline how to run and manage local, offline-capable bindin
 
 **Open Source Setup Description:** This workflow loads scheduling metadata natively via JSON event logs in local folders. Developers and administrators can utilize standard scheduling mechanisms such as CalDAV or self-hosted scheduling engines (e.g., Cal.com) to output compliant metadata payloads directly into the workspace folder.
 
-### 2. SMTP / Transactional Email Service (Steps 2, 6, 13)
+### 2. SMTP / Transactional Email Service (Step 2)
 
-**General logic:** Send templated emails with merged fields and optional file attachments. The service must support: from-address identity, To/CC/BCC, subject, HTML body, attachments, and (for Step 6) local directory text file loading or local prompt input.
+**General logic:** Send templated emails with merged fields. The service must support: from-address identity, To/CC/BCC, subject, HTML body.
 
 **Concrete source:** Direct SMTP Connection or Local filesystem mock staging.
 
@@ -410,8 +338,7 @@ These configurations outline how to run and manage local, offline-capable bindin
   "to": "invitee@example.com",
   "cc": ["guest@example.com"],
   "subject": "{Event Name} - Confirmation",
-  "body_html": "<p>...</p>",
-  "attachments": [{"filename": "briefing.pdf", "content": "<binary>"}]
+  "body_html": "<p>...</p>"
 }
 ```
 
@@ -428,21 +355,22 @@ These configurations outline how to run and manage local, offline-capable bindin
 ```json
 {
   "Target Company Name": "Acme Corp",
-  "Industry": "SaaS",
-  "Primary Contact": "Jane Doe",
-  "Notes": "..."
+  "Industry": "Enterprise Software",
+  "Size": "5000",
+  "Last Briefing Date": "2026-05-15",
+  "Context Notes": "..."
 }
 ```
 
-**Open Source Setup Description:** Relational and tabular context maps directly to [outbox/context.csv](outbox/context.csv) or local SQL databases (such as SQLite), providing zero-latency reads entirely within the local workspace environment.
+**Open Source Setup Description:** Relational and tabular context maps directly to `outbox/context.csv` or local SQL databases (such as SQLite), providing zero-latency reads entirely within the local workspace environment.
 
-### 4. Hierarchical Object / File Storage (Steps 7, 8)
+### 4. Hierarchical Object / File Storage (Steps 6, 7)
 
 **General logic:** Browse a directory tree, find directories or files by name pattern. Supports parent-folder filters, title-contains filters, and pagination.
 
 **Concrete source:** Local File System (workspace directory indexing and recursive walks).
 
-**Filter shape (Step 7 directory lookup):**
+**Filter shape (Step 6 directory lookup):**
 
 ```json
 {
@@ -451,22 +379,22 @@ These configurations outline how to run and manage local, offline-capable bindin
 }
 ```
 
-**Filter shape (Step 8 file lookup):**
+**Filter shape (Step 7 file lookup):**
 
 ```json
 {
-  "parent_folder": "{step7.folder}",
-  "title_contains_all": ["{event.Invitee Name}", "SaaS Company Performance Assessment"]
+  "parent_folder": "{step6.folder}",
+  "title_contains_all": ["{event.Invitee Name}", "SaaS Performance Assessment"]
 }
 ```
 
-**Open Source Setup Description:** This pipeline uses the local file system to store and search documents. Standard file system operations (`fs.readdir` or `os.walk`) locate target files under the [assets/consultant_x/](assets/consultant_x/) workspace structure.
+**Open Source Setup Description:** This pipeline uses the local file system to store and search documents. Standard file system operations (`fs.readdir` or `os.walk`) locate target files under the `assets/consultant_x/` workspace structure.
 
-### 5. Asynchronous HITL Gateway — Boolean (Step 4) & Multi-Field Form (Step 6)
+### 5. Asynchronous HITL Gateway — Boolean (Step 4) & Multi-Field Form (Step 5)
 
 **General logic:** Pause the workflow run until a human responds. Boolean form takes a yes/no; multi-field form takes free text, file paths, and URL text.
 
-**Channel:** Interactive CLI Stdin Prompt (Steps 4 and 6).
+**Channel:** Interactive CLI Stdin Prompt OR Web UI form (Step 4 and Step 5).
 
 **Data shape (boolean response):**
 
@@ -484,9 +412,9 @@ These configurations outline how to run and manage local, offline-capable bindin
 }
 ```
 
-**Open Source Setup Description:** Built-in console loop readers pause the terminal execution thread, prompting the developer/operator to submit yes/no decisions and paste supplementary strings through standard stdin.
+**Open Source Setup Description:** Built-in console loop readers pause the terminal execution thread, prompting the developer/operator to submit yes/no decisions and paste supplementary strings through standard stdin. The Web UI presents the same prompts as form elements.
 
-### 6. Local Staging & Delivery (Steps 17, 18)
+### 6. Local Staging & Delivery (Steps 13, 14)
 
 **General logic:** Save the finalized written and audio briefings. Must support direct writing of structured text and copy/saving of raw binary files to localized paths.
 
@@ -496,14 +424,14 @@ These configurations outline how to run and manage local, offline-capable bindin
 
 ```json
 {
-  "notes_path": "outbox/briefings/{Event Name}_Notes.md",
-  "audio_path": "outbox/briefings/{Event Name}_Audio.mp3"
+  "notes_path": "outbox/briefings/{slug}_notes.md",
+  "audio_path": "outbox/briefings/{slug}_audio.mp3"
 }
 ```
 
-**Open Source Setup Description:** System deliverables are staged on the local disk inside the [outbox/briefings/](outbox/briefings/) directory, avoiding cloud chat platforms and providing direct access to the files via local scripts or editors.
+**Open Source Setup Description:** System deliverables are staged on the local disk inside the `outbox/briefings/` directory, avoiding cloud chat platforms and providing direct access to the files via local scripts or editors.
 
-### 7. LLM Gateway (Steps 9, 10, 13, 14) — OpenRouter
+### 7. LLM Gateway (Steps 9, 10) — OpenRouter
 
 **General logic:** Standard OpenAI-compatible API query wrapper using the direct OpenRouter base path. The model maps to `openai/gpt-4o`.
 
@@ -520,9 +448,9 @@ These configurations outline how to run and manage local, offline-capable bindin
 }
 ```
 
-### 8. Text-to-Speech (TTS) Audio Synthesis Engine (Step 15)
+### 8. Text-to-Speech (TTS) Audio Synthesis Engine (Step 11)
 
-**General logic:** Query OpenRouter audio models (e.g. `openai/gpt-4o-audio-preview` or audio modality parameters) to generate offline audio output. No external third-party tools or separate speech accounts are required.
+**General logic:** Query OpenRouter's `openai/gpt-4o-mini-tts` model to generate offline audio output. No external third-party tools or separate speech accounts are required.
 
 ---
 
@@ -532,29 +460,30 @@ To run this workflow locally:
 
 1. **Verify Files and Folders:**
    Ensure the following directory structure exists in the project root:
-   - [outbox/confirmations/](outbox/confirmations/)
-   - [outbox/briefings/](outbox/briefings/)
-   - [assets/consultant_x/](assets/consultant_x/)
+   - `outbox/confirmations/`
+   - `outbox/briefings/`
+   - `outbox/audio/`
+   - `assets/consultant_x/`
 
 2. **Populate Historical Context Spreadsheets:**
-   Configure your customer context in [outbox/context.csv](outbox/context.csv) with columns: `Invitee Electronic Address` and `Target Company Name`.
+   Configure your customer context in `outbox/context.csv` with columns: `Invitee Electronic Address`, `Target Company Name`, `Industry`, `Size`, `Last Briefing Date`, `Context Notes`.
 
 3. **Stage Consultant Client Folders:**
-   Create a folder matching the target company name under [assets/consultant_x/](assets/consultant_x/). Within that folder, create a briefing document matching the invitee's name, e.g., `Jane Doe SaaS Company Performance Assessment.md`.
+   Create a folder matching the target company name under `assets/consultant_x/`. Within that folder, create a briefing document matching the invitee's name, e.g., `Jane Doe SaaS Performance Assessment.md`.
 
 4. **Execute CLI Test Script:**
    Invoke your local runner script passing the configuration:
 
    ```bash
-   python scripts/run_briefing_assistant.py --event test_records/event.json --bypass-delay
+   pnpm tsx src/workflows/briefing-prep/run.ts --event test_records/event.json --bypass-delay
    ```
 
-   If bypass-delay is set, the workflow will ignore scheduled offsets and generate output immediately.
+   If `--bypass-delay` is set, the workflow will ignore scheduled offsets and generate output immediately.
 
-5. **Interact via Console:**
-   Respond to the active triage prompts directly in your console to select Path A (for entering extra context) or Path B (for standard briefing).
+5. **Interact via Console or Web UI:**
+   Respond to the active triage prompts directly in your console (CLI mode) or in the Web UI (browser mode) to select the supplemental-context path or skip it.
 
 6. **Review Local Staged Outbox:**
-   - Client email draft: Check [outbox/confirmations/Debrief - Jane Doe Consulting.txt](outbox/confirmations/Debrief%20-%20Jane%20Doe%20Consulting.txt)
-   - Briefing MD notes: Check [outbox/briefings/Debrief - Jane Doe Consulting_Notes.md](outbox/briefings/Debrief%20-%20Jane%20Doe%20Consulting_Notes.md)
-   - Synthesis briefing voice output: Check [outbox/briefings/Debrief - Jane Doe Consulting_Audio.mp3](outbox/briefings/Debrief%20-%20Jane%20Doe%20Consulting_Audio.mp3)
+   - Client email draft: `outbox/confirmations/{slug}.txt`
+   - Briefing MD notes: `outbox/briefings/{slug}_notes.md`
+   - Synthesis briefing voice output: `outbox/briefings/{slug}_audio.mp3`

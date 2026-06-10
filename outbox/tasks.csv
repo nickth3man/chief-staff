@@ -1,5 +1,10 @@
 Task ID,Title,Details,Status,Created Date
-TSK-1001,Setup Local Feeds Configuration,Map the 21 tech news substacks into feed list config file,Completed,2026-06-01
-TSK-1002,Verify OpenRouter Authentication,Check OPENROUTER_API_KEY environment variable and API test calls,Completed,2026-06-01
-TSK-1003,Configure Weekly Curation feeds,Incorporate the 13 enterprise technology journals into industry config file,In Progress,2026-06-02
-TSK-1004,Verify Kanban Board Schema,Confirm Trell-to-Kanban transition and columns inside local CSV,Completed,2026-06-02
+TSK-1001,Setup Local Feeds Configuration,Map the 21 tech news substacks into feed list config file,Completed,2026-06-07
+TSK-1002,Verify OpenRouter Authentication,Check OPENROUTER_API_KEY environment variable and API test calls,Completed,2026-06-07
+TSK-1003,Configure Weekly Curation Feeds,Incorporate the 13 enterprise technology journals into industry config file,In Progress,2026-06-07
+TSK-1004,Verify Kanban Board Schema,Confirm Kanban-CSV transition and column vocabulary alignment with tasks.csv,Completed,2026-06-07
+TSK-1780441619445-182,Resolve API throttling by configuring local dry-run suites (python-feedparser / rss-parser) and mapping existing configuration structures,"Owner: Nick Thompson | Date: June 15, 2026",Pending Review,2026-06-02
+TSK-1780441619447-103,Update database schema migration scripts for user profile tables and complete full local validation cycle,"Owner: Lisa Vance | Date: June 10, 2026",Pending Review,2026-06-02
+TSK-1780441619447-118,"Supply mock CSV headers for outbox context databases, tasks, and kanban cards to David","Owner: Nick Thompson | Date: June 6, 2026 (today per transcript)",Pending Review,2026-06-02
+TSK-1780441619448-472,Draft architecture diagram for the local fallback pipeline (incorporating Nick's outbox data),"Owner: David Chen | Date: June 20, 2026",Pending Review,2026-06-02
+TSK-1780441619449-562,Review and approve Q3 budget spreadsheet (SaaS subscription allocations),"Owner: Sarah Jenkins | Date: June 12, 2026",Pending Review,2026-06-02
